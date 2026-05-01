@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RepostKit — Reseller Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --accent: #00e5a0;
+    --accent2: #00b37d;
+    --accent-dim: rgba(0,229,160,0.1);
+    --accent-glow: rgba(0,229,160,0.25);
+    --text: #f0f0f0;
+    --text-muted: #666;
+    --text-dim: #999;
+    --danger: #ff4d4d;
+    --warning: #ffaa00;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    font-size: 16px;
+    font-weight: 800;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .badge {
+    background: var(--accent-dim);
+    border: 1px solid rgba(0,229,160,0.3);
+    color: var(--accent);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* MAIN LAYOUT */
+  .app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 65px);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 8px;
+    margin: 8px 0 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active {
+    background: var(--accent-dim);
+    color: var(--accent);
+    border-color: rgba(0,229,160,0.2);
+  }
+
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .settings-box {
+    margin-top: auto;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+
+  .settings-box h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .setting-label {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .setting-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 4px 8px;
+    font-size: 13px;
+    width: 80px;
+    text-align: right;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .setting-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .store-name-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    margin-top: 4px;
+  }
+
+  .store-name-input:focus { outline: none; border-color: var(--accent); }
+
+  /* MAIN CONTENT */
+  .main {
+    padding: 32px;
+    overflow-y: auto;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* PAGE HEADER */
+  .page-header {
+    margin-bottom: 28px;
+  }
+
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .page-subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  /* UPLOAD ZONE */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+    display: block;
+    width: 100%;
+  }
+
+  .upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, var(--accent-dim) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--accent);
+  }
+
+  .upload-zone:hover::before, .upload-zone.dragover::before {
+    opacity: 1;
+  }
+
+  .upload-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .upload-zone h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .upload-zone p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .upload-zone input[type="file"] {
+    display: none;
+  }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* PRODUCT GRID */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .product-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,229,160,0.1);
+  }
+
+  .product-card.processing {
+    border-color: var(--warning);
+  }
+
+  .product-card.ready {
+    border-color: rgba(0,229,160,0.4);
+  }
+
+  .product-img-wrap {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--surface2);
+  }
+
+  .product-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .product-status-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-processing {
+    background: rgba(255,170,0,0.15);
+    border: 1px solid var(--warning);
+    color: var(--warning);
+  }
+
+  .status-ready {
+    background: var(--accent-dim);
+    border: 1px solid rgba(0,229,160,0.3);
+    color: var(--accent);
+  }
+
+  .status-posted {
+    background: rgba(100,100,100,0.15);
+    border: 1px solid #444;
+    color: #666;
+  }
+
+  .product-info {
+    padding: 14px;
+  }
+
+  .product-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .price-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .price-original {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-decoration: line-through;
+  }
+
+  .price-selling {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent);
+    font-family: 'Syne', sans-serif;
+  }
+
+  .caption-box {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    max-height: 80px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .caption-box::-webkit-scrollbar { width: 3px; }
+  .caption-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* BUTTONS */
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover { background: var(--accent2); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-danger {
+    background: rgba(255,77,77,0.1);
+    color: var(--danger);
+    border: 1px solid rgba(255,77,77,0.2);
+  }
+
+  .btn-danger:hover { background: rgba(255,77,77,0.2); }
+
+  .btn-full { width: 100%; justify-content: center; }
+
+  .btn-lg {
+    padding: 12px 24px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  /* ACTION BAR */
+  .action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+  }
+
+  .action-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .action-bar-info {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .action-bar-info strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* PROCESSING OVERLAY */
+  .processing-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .processing-overlay.active {
+    display: flex;
+  }
+
+  .processing-spinner {
+    width: 48px; height: 48px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .processing-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .processing-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* SHARE MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    width: 480px;
+    max-width: 90vw;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .modal p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .modal-img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .caption-full {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .wa-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .wa-btn-green {
+    background: #25D366;
+    color: #fff;
+  }
+
+  .wa-btn-green:hover { background: #1da851; }
+
+  .copy-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .close-modal {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 20px;
+    float: right;
+    margin-top: -8px;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+
+  .empty-state-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+  .empty-state h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-dim);
+  }
+
+  /* PROGRESS BAR */
+  .progress-bar-wrap {
+    background: var(--border);
+    height: 3px;
+    border-radius: 2px;
+    margin: 8px 0;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 13px;
+    color: var(--accent);
+    z-index: 400;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .product-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+    header { padding: 14px 16px; }
+    .main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">R</div>
+    Repost<span>Kit</span>
+  </div>
+  <div class="header-right">
+    <div class="badge">Beta v0.1</div>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">Workspace</div>
+    <div class="nav-item active" onclick="showPage('upload')">
+      <span class="nav-icon">⬆</span> Upload Products
+    </div>
+    <div class="nav-item" onclick="showPage('queue')">
+      <span class="nav-icon">📋</span> Post Queue
+      <span id="queue-count" style="margin-left:auto;background:var(--accent);color:#000;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;display:none;">0</span>
+    </div>
+    <div class="nav-item" onclick="showPage('posted')">
+      <span class="nav-icon">✓</span> Posted
+    </div>
+
+    <div class="sidebar-label" style="margin-top:12px;">Settings</div>
+
+    <div class="settings-box">
+      <h4>Store Settings</h4>
+      <div style="margin-bottom:10px;">
+        <div class="setting-label" style="margin-bottom:4px;">Store Name</div>
+        <input type="text" class="store-name-input" id="store-name" placeholder="e.g. KicksNG" value="KicksByFavour">
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Markup %</span>
+        <input type="number" class="setting-input" id="markup-pct" value="38" min="1" max="200">
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Daily Target</span>
+        <input type="number" class="setting-input" id="daily-target" value="13" min="1" max="50">
+      </div>
+      <div class="progress-bar-wrap" style="margin-top:8px;">
+        <div class="progress-bar-fill" id="daily-progress" style="width:0%"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:4px;" id="daily-label">0 / 13 posted today</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- UPLOAD PAGE -->
+    <div class="page active" id="page-upload">
+      <div class="page-header">
+        <div class="page-title">Upload Products</div>
+        <div class="page-subtitle">Drop screenshots from your wholesaler channels. AI handles the rest.</div>
+      </div>
+
+      <div class="upload-zone" id="upload-zone">
+        <span class="upload-icon">📦</span>
+        <h3>Select product images</h3>
+        <p>Choose screenshots from your wholesaler channels.<br>You can select multiple images at once.</p>
+        <br>
+        <label for="file-input" style="display:inline-block;background:var(--accent);color:#000;font-weight:700;font-size:15px;padding:12px 32px;border-radius:10px;cursor:pointer;font-family:'Syne',sans-serif;margin-top:4px;">
+          Choose Images
+        </label>
+        <input type="file" id="file-input" multiple accept="image/*" onchange="handleFiles(this.files)" style="display:none;">
+      </div>
+
+      <div id="upload-results" style="margin-top:24px;"></div>
+    </div>
+
+    <!-- QUEUE PAGE -->
+    <div class="page" id="page-queue">
+      <div class="page-header">
+        <div class="page-title">Post Queue</div>
+        <div class="page-subtitle">Review your products before sending to your WhatsApp channel.</div>
+      </div>
+
+      <div class="action-bar" id="queue-action-bar" style="display:none;">
+        <div class="action-bar-left">
+          <span class="action-bar-info"><strong id="ready-count">0</strong> products ready to post</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost" onclick="clearPosted()">Clear Posted</button>
+          <button class="btn btn-primary btn-lg" onclick="postAllReady()">🚀 Post All Ready</button>
+        </div>
+      </div>
+
+      <div id="queue-grid" class="product-grid">
+        <div class="empty-state" style="grid-column:1/-1;">
+          <span class="empty-state-icon">📋</span>
+          <h3>Queue is empty</h3>
+          <p>Upload product images to get started</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSTED PAGE -->
+    <div class="page" id="page-posted">
+      <div class="page-header">
+        <div class="page-title">Posted</div>
+        <div class="page-subtitle">Products already shared to your channel.</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-posted">0</div>
+          <div class="stat-label">Posted Today</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total Products</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-revenue">₦0</div>
+          <div class="stat-label">Est. Revenue</div>
+        </div>
+      </div>
+
+      <div id="posted-grid" class="product-grid">
+        <div class="empty-state" style="grid-column:1/-1;">
+          <span class="empty-state-icon">✨</span>
+          <h3>Nothing posted yet</h3>
+          <p>Start posting products and they'll appear here</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- PROCESSING OVERLAY -->
+<div class="processing-overlay" id="processing-overlay">
+  <div class="processing-spinner"></div>
+  <div class="processing-text" id="processing-text">Analyzing product...</div>
+  <div class="processing-sub" id="processing-sub">AI is reading price and generating caption</div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="close-modal" onclick="closeModal()">✕</button>
+    <h3>Ready to Post</h3>
+    <p>Copy the caption and share the image to your WhatsApp channel or status.</p>
+    <img id="modal-img" class="modal-img" src="" alt="Product">
+    <div class="caption-full" id="modal-caption"></div>
+    <div class="modal-actions">
+      <button class="wa-btn wa-btn-green" onclick="openWhatsApp()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Share on WhatsApp
+      </button>
+      <button class="copy-btn" onclick="copyCaption()">📋 Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // STATE
+  const state = {
+    products: [],
+    postedCount: 0,
+    currentModal: null
+  };
+
+  // NAV
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if (name === 'queue') renderQueue();
+    if (name === 'posted') renderPosted();
+  }
+
+  // DRAG & DROP (desktop only)
+  const zone = document.getElementById('upload-zone');
+  if (zone) {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+  }
+
+  // FILE HANDLER
+  async function handleFiles(files) {
+    const fileArray = Array.from(files);
+    if (!fileArray.length) return;
+
+    showProcessing(`Processing ${fileArray.length} product${fileArray.length > 1 ? 's' : ''}...`, 'AI is reading prices and writing captions');
+
+    for (let i = 0; i < fileArray.length; i++) {
+      updateProcessing(`Analyzing product ${i + 1} of ${fileArray.length}...`, 'Reading price, generating caption...');
+      const file = fileArray[i];
+      const imageData = await fileToBase64(file);
+      const product = await analyzeProduct(imageData, file.name);
+      state.products.push(product);
+    }
+
+    hideProcessing();
+    updateQueueCount();
+    showToast(`✓ ${fileArray.length} product${fileArray.length > 1 ? 's' : ''} added to queue`);
+
+    // Show results on upload page
+    renderUploadResults();
+    showPage('queue');
+    document.querySelectorAll('.nav-item')[1].classList.add('active');
+    document.querySelectorAll('.nav-item')[0].classList.remove('active');
+  }
+
+  function fileToBase64(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result.split(',')[1]);
+      r.onerror = () => rej(new Error('Read failed'));
+      r.readAsDataURL(file);
+    });
+  }
+
+  // AI ANALYSIS
+  async function analyzeProduct(base64Image, filename) {
+    const markup = parseFloat(document.getElementById('markup-pct').value) || 38;
+    const storeName = document.getElementById('store-name').value || 'My Store';
+
+    const prompt = `You are a product analyst for a Nigerian fashion/sneaker reseller.
+
+Analyze this product image and extract information. The image is likely a screenshot from a wholesaler's WhatsApp channel showing a product with a price.
+
+Return ONLY a JSON object with these exact fields:
+{
+  "productName": "descriptive product name (e.g. Nike Air Force 1 Low White, Adidas Samba Black, Fashion Sneakers etc)",
+  "originalPrice": number (the price shown in the image in Naira, without commas or symbols - if no price visible, return 0),
+  "description": "brief 1-sentence product description",
+  "emoji": "one relevant emoji for this product type"
+}
+
+If no price is visible in the image, return 0 for originalPrice.
+Return ONLY the JSON, no other text.`;
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{
+            role: 'user',
+            content: [{
+              type: 'image',
+              source: { type: 'base64', media_type: 'image/jpeg', data: base64Image }
+            }, {
+              type: 'text',
+              text: prompt
+            }]
+          }]
+        })
+      });
+
+      const data = await response.json();
+      const text = data.content?.[0]?.text || '{}';
+      const clean = text.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+
+      const originalPrice = parsed.originalPrice || 0;
+      const sellingPrice = originalPrice > 0 ? Math.ceil(originalPrice * (1 + markup / 100)) : 0;
+
+      const caption = generateCaption(parsed.productName, sellingPrice, storeName, parsed.description, parsed.emoji);
+
+      return {
+        id: Date.now() + Math.random(),
+        imageData: base64Image,
+        filename,
+        productName: parsed.productName || 'Product',
+        originalPrice,
+        sellingPrice,
+        caption,
+        emoji: parsed.emoji || '👟',
+        status: 'ready',
+        postedAt: null
+      };
+
+    } catch (err) {
+      console.error('AI error:', err);
+      return {
+        id: Date.now() + Math.random(),
+        imageData: base64Image,
+        filename,
+        productName: filename.replace(/\.[^.]+$/, ''),
+        originalPrice: 0,
+        sellingPrice: 0,
+        caption: 'Price: Contact us to order',
+        emoji: '👟',
+        status: 'ready',
+        postedAt: null
+      };
+    }
+  }
+
+  function generateCaption(name, price, storeName, description, emoji) {
+    const formatted = price > 0 ? `₦${price.toLocaleString()}` : 'DM for price';
+    return `${emoji} *${name}*\n\n${description || 'Premium quality. Fresh arrival.'}\n\n💰 *Price: ${formatted}*\n\n✅ Available now\n📦 Fast delivery\n📩 DM to order\n\n— ${storeName}`;
+  }
+
+  // RENDER QUEUE
+  function renderQueue() {
+    const grid = document.getElementById('queue-grid');
+    const actionBar = document.getElementById('queue-action-bar');
+    const readyProducts = state.products.filter(p => p.status === 'ready');
+
+    document.getElementById('ready-count').textContent = readyProducts.length;
+    actionBar.style.display = state.products.length ? 'flex' : 'none';
+
+    if (!state.products.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+        <span class="empty-state-icon">📋</span>
+        <h3>Queue is empty</h3>
+        <p>Upload product images to get started</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = state.products.filter(p => p.status !== 'posted').map(p => productCard(p)).join('');
+  }
+
+  function productCard(p) {
+    const statusBadge = p.status === 'ready'
+      ? '<span class="product-status-badge status-ready">Ready</span>'
+      : '<span class="product-status-badge status-processing">Processing</span>';
+
+    return `<div class="product-card ${p.status}" id="card-${p.id}">
+      <div class="product-img-wrap">
+        <img src="data:image/jpeg;base64,${p.imageData}" alt="${p.productName}">
+        ${statusBadge}
+      </div>
+      <div class="product-info">
+        <div class="product-name">${p.emoji} ${p.productName}</div>
+        <div class="price-row">
+          ${p.originalPrice > 0 ? `<span class="price-original">₦${p.originalPrice.toLocaleString()}</span>` : ''}
+          <span class="price-selling">${p.sellingPrice > 0 ? '₦' + p.sellingPrice.toLocaleString() : 'No price detected'}</span>
+        </div>
+        <div class="caption-box">${p.caption.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>')}</div>
+        <div class="card-actions">
+          <button class="btn btn-primary btn-full" onclick="openModal('${p.id}')">📤 Post This</button>
+          <button class="btn btn-danger" onclick="removeProduct('${p.id}')">✕</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // RENDER POSTED
+  function renderPosted() {
+    const grid = document.getElementById('posted-grid');
+    const posted = state.products.filter(p => p.status === 'posted');
+
+    document.getElementById('stat-posted').textContent = posted.length;
+    document.getElementById('stat-total').textContent = state.products.length;
+    const revenue = posted.reduce((sum, p) => sum + (p.sellingPrice || 0), 0);
+    document.getElementById('stat-revenue').textContent = '₦' + revenue.toLocaleString();
+
+    if (!posted.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+        <span class="empty-state-icon">✨</span>
+        <h3>Nothing posted yet</h3>
+        <p>Start posting products and they'll appear here</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = posted.map(p => `
+      <div class="product-card" style="opacity:0.7;">
+        <div class="product-img-wrap">
+          <img src="data:image/jpeg;base64,${p.imageData}" alt="${p.productName}">
+          <span class="product-status-badge status-posted">Posted</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name">${p.emoji} ${p.productName}</div>
+          <div class="price-row">
+            <span class="price-selling">${p.sellingPrice > 0 ? '₦' + p.sellingPrice.toLocaleString() : 'No price'}</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Posted ${p.postedAt}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // MODAL
+  function openModal(id) {
+    const p = state.products.find(p => String(p.id) === String(id));
+    if (!p) return;
+    state.currentModal = p;
+    document.getElementById('modal-img').src = `data:image/jpeg;base64,${p.imageData}`;
+    document.getElementById('modal-caption').innerHTML = p.caption.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
+    document.getElementById('modal-overlay').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+  }
+
+  function copyCaption() {
+    if (!state.currentModal) return;
+    navigator.clipboard.writeText(state.currentModal.caption).then(() => {
+      showToast('✓ Caption copied to clipboard');
+    });
+  }
+
+  function openWhatsApp() {
+    if (!state.currentModal) return;
+    const text = encodeURIComponent(state.currentModal.caption);
+    markPosted(state.currentModal.id);
+    closeModal();
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  }
+
+  function markPosted(id) {
+    const p = state.products.find(p => String(p.id) === String(id));
+    if (!p) return;
+    p.status = 'posted';
+    p.postedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    state.postedCount++;
+    updateDailyProgress();
+    updateQueueCount();
+    renderQueue();
+    showToast('✓ Marked as posted');
+  }
+
+  function postAllReady() {
+    const ready = state.products.filter(p => p.status === 'ready');
+    if (!ready.length) { showToast('No ready products'); return; }
+    openModal(ready[0].id);
+  }
+
+  function removeProduct(id) {
+    state.products = state.products.filter(p => String(p.id) !== String(id));
+    updateQueueCount();
+    renderQueue();
+  }
+
+  function clearPosted() {
+    state.products = state.products.filter(p => p.status !== 'posted');
+    renderQueue();
+    showToast('Cleared posted products');
+  }
+
+  // HELPERS
+  function renderUploadResults() {}
+
+  function updateQueueCount() {
+    const count = state.products.filter(p => p.status === 'ready').length;
+    const badge = document.getElementById('queue-count');
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+
+  function updateDailyProgress() {
+    const target = parseInt(document.getElementById('daily-target').value) || 13;
+    const posted = state.products.filter(p => p.status === 'posted').length;
+    const pct = Math.min((posted / target) * 100, 100);
+    document.getElementById('daily-progress').style.width = pct + '%';
+    document.getElementById('daily-label').textContent = `${posted} / ${target} posted today`;
+  }
+
+  function showProcessing(text, sub) {
+    document.getElementById('processing-text').textContent = text;
+    document.getElementById('processing-sub').textContent = sub;
+    document.getElementById('processing-overlay').classList.add('active');
+  }
+
+  function updateProcessing(text, sub) {
+    document.getElementById('processing-text').textContent = text;
+    document.getElementById('processing-sub').textContent = sub;
+  }
+
+  function hideProcessing() {
+    document.getElementById('processing-overlay').classList.remove('active');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // Close modal on overlay click
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+
+  // Settings live update
+  document.getElementById('daily-target').addEventListener('input', updateDailyProgress);
+</script>
+</body>
+</html>
